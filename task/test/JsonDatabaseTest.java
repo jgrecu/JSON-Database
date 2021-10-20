@@ -1,4 +1,4 @@
-import org.hyperskill.hstest.dynamic.input.DynamicTestingMethod;
+import org.hyperskill.hstest.dynamic.DynamicTest;
 import org.hyperskill.hstest.stage.StageTest;
 import org.hyperskill.hstest.testcase.CheckResult;
 import org.hyperskill.hstest.testing.TestedProgram;
@@ -15,12 +15,17 @@ public class JsonDatabaseTest extends StageTest<String> {
             "Sent: Give me a record # N\n" +
             "Received: A record # N was sent!";
 
-    @DynamicTestingMethod
-    CheckResult test() throws InterruptedException {
+    @DynamicTest(order = 1)
+    CheckResult test() {
 
         TestedProgram server = new TestedProgram("server");
         server.startInBackground();
-        Thread.sleep(500);
+
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         String serverOutput = server.getOutput().trim();
 

@@ -64,7 +64,8 @@ files:
 - name: test/JsonDatabaseTest.java
   visible: false
   text: |
-    import org.hyperskill.hstest.dynamic.input.DynamicTestingMethod;
+    import org.hyperskill.hstest.dynamic.DynamicTest;
+    import org.hyperskill.hstest.dynamic.input.DynamicTesting;
     import org.hyperskill.hstest.exception.outcomes.WrongAnswer;
     import org.hyperskill.hstest.stage.StageTest;
     import org.hyperskill.hstest.testcase.CheckResult;
@@ -102,17 +103,23 @@ files:
 
         private static int threadsCount;
 
-        @DynamicTestingMethod
+        @DynamicTest(order = 1)
         CheckResult checkExit() {
 
             TestedProgram server = getServer();
             server.startInBackground();
 
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             TestedProgram client = getClient();
             client.start("-t", "exit");
 
             try {
-                Thread.sleep(50);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -164,7 +171,7 @@ files:
             return CheckResult.correct();
         }
 
-        @DynamicTestingMethod
+        @DynamicTest(order = 2)
         CheckResult checkDataFolder() {
 
             if (!Files.exists(Paths.get(clientDataPath))) {
@@ -174,12 +181,18 @@ files:
             return CheckResult.correct();
         }
 
-        @DynamicTestingMethod
+        @DynamicTest(order = 3)
         CheckResult testInputs() throws InterruptedException {
 
             threadsCount = getThreadCount();
             TestedProgram server = getServer();
             server.startInBackground();
+
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
             TestedProgram client;
             String output;

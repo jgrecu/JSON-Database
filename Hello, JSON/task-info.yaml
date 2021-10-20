@@ -70,7 +70,7 @@ files:
 - name: test/JsonDatabaseTest.java
   visible: false
   text: |
-    import org.hyperskill.hstest.dynamic.input.DynamicTestingMethod;
+    import org.hyperskill.hstest.dynamic.DynamicTest;
     import org.hyperskill.hstest.stage.StageTest;
     import org.hyperskill.hstest.testcase.CheckResult;
     import org.hyperskill.hstest.testing.TestedProgram;
@@ -85,17 +85,23 @@ files:
         private static final String NO_SUCH_KEY_REASON = "No such key";
         private static final String WRONG_EXIT = "The server should stop when client sends 'exit' request";
 
-        @DynamicTestingMethod
+        @DynamicTest(order = 1)
         CheckResult checkExit() {
 
             TestedProgram server = getServer();
             server.startInBackground();
 
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             TestedProgram client = getClient();
             client.start("-t", "exit");
 
             try {
-                Thread.sleep(50);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -108,11 +114,17 @@ files:
             return CheckResult.correct();
         }
 
-        @DynamicTestingMethod
+        @DynamicTest(order = 2)
         CheckResult testInputs() {
 
             TestedProgram server = getServer();
             server.startInBackground();
+
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
             TestedProgram client;
             String output;

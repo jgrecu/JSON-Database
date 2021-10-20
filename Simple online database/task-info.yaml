@@ -27,7 +27,7 @@ files:
 - name: test/JsonDatabaseTest.java
   visible: false
   text: |
-    import org.hyperskill.hstest.dynamic.input.DynamicTestingMethod;
+    import org.hyperskill.hstest.dynamic.DynamicTest;
     import org.hyperskill.hstest.stage.StageTest;
     import org.hyperskill.hstest.testcase.CheckResult;
     import org.hyperskill.hstest.testing.TestedProgram;
@@ -54,7 +54,7 @@ files:
         private static final String WRONG_DELETE_INDEX_OUT_OF_BOUNDS = "When a user tries to delete a cell which index " +
                 "is less than 0 or greater than 1000, the server should response with  '" + ERROR_STATUS + "'.";
 
-        @DynamicTestingMethod
+        @DynamicTest(order = 1)
         CheckResult checkExit() {
 
             TestedProgram server = getServer();
@@ -77,7 +77,7 @@ files:
             return CheckResult.correct();
         }
 
-        @DynamicTestingMethod
+        @DynamicTest(order = 2)
         CheckResult testInputs() {
 
             TestedProgram server = getServer();

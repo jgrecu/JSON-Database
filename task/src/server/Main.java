@@ -1,5 +1,11 @@
 package server;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,8 +17,26 @@ public class Main {
     static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        Arrays.fill(array, "");
-        menu();
+//        Arrays.fill(array, "");
+//        menu();
+        String address = "127.0.0.1";
+        int port = 23456;
+
+        try (ServerSocket server = new ServerSocket(port, 50, InetAddress.getByName(address))){
+            System.out.println("Server started!");
+            try (Socket socket = server.accept();
+             DataInputStream input = new DataInputStream(socket.getInputStream());
+             DataOutputStream output = new DataOutputStream(socket.getOutputStream())) {
+
+                String msg = input.readUTF();
+                System.out.println("Received: " + msg);
+                String outMsg = "A record # " + msg.substring(msg.lastIndexOf(" ") + 1) + " was sent!";
+                output.writeUTF(outMsg);
+                System.out.println("Sent: " + outMsg);
+            }
+        } catch (IOException e) {
+            System.out.println("ERROR");
+        }
     }
 
     private static void menu() {
@@ -50,7 +74,7 @@ public class Main {
         }
 
         if (position > 0 && position < 101) {
-            array[position -1] = "";
+            array[position - 1] = "";
             System.out.println("OK");
         } else {
             System.out.println("ERROR");

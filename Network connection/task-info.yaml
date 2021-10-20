@@ -27,7 +27,7 @@ files:
 - name: test/JsonDatabaseTest.java
   visible: false
   text: |
-    import org.hyperskill.hstest.dynamic.input.DynamicTestingMethod;
+    import org.hyperskill.hstest.dynamic.DynamicTest;
     import org.hyperskill.hstest.stage.StageTest;
     import org.hyperskill.hstest.testcase.CheckResult;
     import org.hyperskill.hstest.testing.TestedProgram;
@@ -44,12 +44,17 @@ files:
                 "Sent: Give me a record # N\n" +
                 "Received: A record # N was sent!";
 
-        @DynamicTestingMethod
-        CheckResult test() throws InterruptedException {
+        @DynamicTest(order = 1)
+        CheckResult test() {
 
             TestedProgram server = new TestedProgram("server");
             server.startInBackground();
-            Thread.sleep(500);
+
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
             String serverOutput = server.getOutput().trim();
 
@@ -104,5 +109,8 @@ files:
     }
   learner_created: true
 feedback_link: https://hyperskill.org/projects/65/stages/349/implement#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations!
+  time: Wed, 20 Oct 2021 12:08:43 UTC
 record: -1
