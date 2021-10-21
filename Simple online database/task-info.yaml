@@ -197,6 +197,17 @@ files:
         }
     }
   learner_created: false
+- name: src/server/MyAppException.java
+  visible: true
+  text: |
+    package server;
+
+    public class MyAppException extends Exception {
+        public MyAppException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/65/stages/350/implement#comment
 status: Unchecked
 record: -1
