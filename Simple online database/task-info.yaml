@@ -208,6 +208,33 @@ files:
         }
     }
   learner_created: true
+- name: src/server/Command.java
+  visible: true
+  learner_created: true
+- name: src/server/SetCommand.java
+  visible: true
+  learner_created: true
+- name: src/server/DbOperations.java
+  visible: true
+  learner_created: true
+- name: src/server/GetCommand.java
+  visible: true
+  learner_created: true
+- name: src/server/DeleteCommand.java
+  visible: true
+  learner_created: true
+- name: src/server/ExitCommand.java
+  visible: true
+  learner_created: true
+- name: src/server/Controller.java
+  visible: true
+  learner_created: true
+- name: src/client/GetArgs.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/65/stages/350/implement#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations!
+  time: Fri, 22 Oct 2021 17:14:03 UTC
 record: -1
