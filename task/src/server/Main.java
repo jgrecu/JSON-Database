@@ -1,5 +1,7 @@
 package server;
 
+import com.google.gson.Gson;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -17,11 +19,11 @@ public class Main {
 
         try (ServerSocket server = new ServerSocket(port, 50, InetAddress.getByName(address))) {
             System.out.println("Server started!");
-            do {
+            while (!doStop) {
                 Session session = new Session(server.accept());
                 session.start();
                 session.join();
-            } while (!doStop);
+            }
         } catch (IOException | InterruptedException e) {
             System.out.println("ERROR");
         }
@@ -47,7 +49,7 @@ class Session extends Thread {
             String msg = input.readUTF();
             String outMsg = processMessage(msg);
             output.writeUTF(outMsg);
-            if (msg.startsWith("exit")) {
+            if (msg.contains("exit")) {
                 Main.setDoStop(true);
             }
         } catch (IOException e) {
@@ -56,30 +58,34 @@ class Session extends Thread {
     }
 
     public String processMessage(String receivedMessage) {
-        String commandStr = "";
-        int possition = 0;
-        String messageStr = "";
+        Gson gson = new Gson();
+        DbOperations dbOperations = gson.fromJson(receivedMessage, DbOperations.class);
+//        System.out.println(message);
 
-        String[] strings = receivedMessage.strip().split("\\s++");
-        if (strings.length > 2) {
-            commandStr = strings[0];
-            possition = Integer.parseInt(strings[1]);
-            messageStr = receivedMessage.strip().substring(receivedMessage.lastIndexOf(strings[1]) + 2);
-        } else if (strings.length > 1) {
-            commandStr = strings[0];
-            possition = Integer.parseInt(strings[1]);
-        } else {
-            commandStr = receivedMessage.strip();
-        }
-
+//        String commandStr = "";
+//        int possition = 0;
+//        String messageStr = "";
+//
+//        String[] strings = receivedMessage.strip().split("\\s++");
+//        if (strings.length > 2) {
+//            commandStr = strings[0];
+//            possition = Integer.parseInt(strings[1]);
+//            messageStr = receivedMessage.strip().substring(receivedMessage.lastIndexOf(strings[1]) + 2);
+//        } else if (strings.length > 1) {
+//            commandStr = strings[0];
+//            possition = Integer.parseInt(strings[1]);
+//        } else {
+//            commandStr = receivedMessage.strip();
+//        }
+//
         final Controller controller = new Controller();
-        final DbOperations dbOperations = new DbOperations(possition, messageStr);
+//        final DbOperations dbOperations = new DbOperations(possition, messageStr);
         Command get = new GetCommand(dbOperations);
         Command set = new SetCommand(dbOperations);
         Command delete = new DeleteCommand(dbOperations);
         Command exit = new ExitCommand(dbOperations);
-
-        switch (commandStr) {
+//
+        switch (dbOperations.getType()) {
             case "get":
                 controller.setCommand(get);
                 return controller.executeCommand();

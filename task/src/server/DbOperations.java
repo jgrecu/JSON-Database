@@ -1,62 +1,54 @@
 package server;
 
-import java.util.Arrays;
+import com.google.gson.Gson;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class DbOperations {
-    private final int position;
-    private final String message;
-    static String[] array = new String[1000];
-    static {
-        Arrays.fill(array, "");
-    }
+    private final String type;
+    private final String key;
+    private final String value;
+    static final Map<String, String> mapDb = new HashMap<>();
 
-    public DbOperations() {
-        this.position = 0;
-        this.message = "";
-    }
 
-    public DbOperations(int position) {
-        this.position = position;
-        this.message = "";
-    }
-
-    public DbOperations(int position, String message) {
-        this.position = position;
-        this.message = message;
+    public DbOperations(String type, String key, String value) {
+        this.type = type;
+        this.key = key;
+        this.value = value;
     }
 
     public String set() {
-        if (position > 0 && position < 1001) {
-            array[position - 1] = message;
-            return "OK";
-        } else {
-            return "ERROR";
-        }
+        //if (!mapDb.containsKey(key)) {
+            mapDb.put(key, value);
+            return new Gson().toJson(Map.of("response", "OK"));
+        //} else {
+            //return new Gson().toJson(new ErrorMessage());
+        //}
     }
 
     public String get() {
-        if (position > 0 && position < 1001) {
-            String result = array[position - 1];
-            if (!result.equalsIgnoreCase("")) {
-                return result;
-            } else {
-                return "ERROR";
-            }
+        if (mapDb.containsKey(key)) {
+            return new Gson().toJson(new Message("OK", mapDb.get(key)));
         } else {
-            return "ERROR";
+            return new Gson().toJson(new ErrorMessage());
         }
     }
 
     public String delete() {
-        if (position > 0 && position < 1001) {
-            array[position - 1] = "";
-            return "OK";
+        if (mapDb.containsKey(key)) {
+            mapDb.remove(key);
+            return new Gson().toJson(Map.of("response","OK"));
         } else {
-            return "ERROR";
+            return new Gson().toJson(new ErrorMessage());
         }
     }
 
     public String exit() {
-        return "OK";
+        return new Gson().toJson(Map.of("response","OK"));
+    }
+
+    public String getType() {
+        return type;
     }
 }

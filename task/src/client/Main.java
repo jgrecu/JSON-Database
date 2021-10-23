@@ -1,6 +1,7 @@
 package client;
 
 import com.beust.jcommander.JCommander;
+import com.google.gson.Gson;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -16,7 +17,9 @@ public class Main {
                 .addObject(getArgs)
                 .build()
                 .parse(args);
-        String msg = getArgs.getMessage();
+        Gson gson = new Gson();
+        //String msg = getArgs.getValue();
+        String msg = gson.toJson(getArgs);
 
         String address = "127.0.0.1";
         int port = 23456;
