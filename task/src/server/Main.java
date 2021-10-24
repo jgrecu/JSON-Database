@@ -58,33 +58,15 @@ class Session extends Thread {
     }
 
     public String processMessage(String receivedMessage) {
-        Gson gson = new Gson();
-        DbOperations dbOperations = gson.fromJson(receivedMessage, DbOperations.class);
-//        System.out.println(message);
-
-//        String commandStr = "";
-//        int possition = 0;
-//        String messageStr = "";
-//
-//        String[] strings = receivedMessage.strip().split("\\s++");
-//        if (strings.length > 2) {
-//            commandStr = strings[0];
-//            possition = Integer.parseInt(strings[1]);
-//            messageStr = receivedMessage.strip().substring(receivedMessage.lastIndexOf(strings[1]) + 2);
-//        } else if (strings.length > 1) {
-//            commandStr = strings[0];
-//            possition = Integer.parseInt(strings[1]);
-//        } else {
-//            commandStr = receivedMessage.strip();
-//        }
-//
+        final Gson gson = new Gson();
         final Controller controller = new Controller();
-//        final DbOperations dbOperations = new DbOperations(possition, messageStr);
+        DbOperations dbOperations = gson.fromJson(receivedMessage, DbOperations.class);
+
         Command get = new GetCommand(dbOperations);
         Command set = new SetCommand(dbOperations);
         Command delete = new DeleteCommand(dbOperations);
         Command exit = new ExitCommand(dbOperations);
-//
+
         switch (dbOperations.getType()) {
             case "get":
                 controller.setCommand(get);
@@ -99,7 +81,7 @@ class Session extends Thread {
                 controller.setCommand(exit);
                 return controller.executeCommand();
             default:
-                return "ERROR";
+                return "{\"response\":\"ERROR\"}";
         }
     }
 
