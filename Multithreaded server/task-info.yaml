@@ -24,43 +24,6 @@ files:
         }
     }
   learner_created: false
-- name: test/JsonRequestBuilder.java
-  visible: false
-  text: |-
-    import com.google.gson.Gson;
-    import com.google.gson.JsonObject;
-
-    class JsonBuilder {
-
-        private final Gson gson = new Gson();
-        private final JsonObject jsonObject = new JsonObject();
-
-        private JsonBuilder() {
-        }
-
-        public static JsonBuilder newBuilder() {
-            return new JsonBuilder();
-        }
-
-        public JsonBuilder addValue(String key, String value) {
-            jsonObject.addProperty(key, value);
-            return this;
-        }
-
-        public JsonBuilder addJsonObject(String key, JsonObject object) {
-            jsonObject.add(key, object);
-            return this;
-        }
-
-        public String getAsString() {
-            return jsonObject.toString();
-        }
-
-        public JsonObject getAsJsonObject() {
-            return jsonObject;
-        }
-    }
-  learner_created: false
 - name: test/JsonDatabaseTest.java
   visible: false
   text: |
@@ -596,6 +559,258 @@ files:
 
             throw new WrongAnswer("Can't find request JSON object in the output.\n" +
                 "It should contain 'response' key");
+        }
+    }
+  learner_created: false
+- name: src/server/MyAppException.java
+  visible: true
+  text: |
+    package server;
+
+    public class MyAppException extends Exception {
+        public MyAppException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+  learner_created: true
+- name: src/server/DeleteCommand.java
+  visible: true
+  text: |
+    package server;
+
+    public class DeleteCommand implements Command {
+        private DbOperations dbOperations;
+
+        public DeleteCommand(DbOperations dbOperations) {
+            this.dbOperations = dbOperations;
+        }
+
+        @Override
+        public String execute() {
+            return dbOperations.delete();
+        }
+    }
+  learner_created: true
+- name: src/server/DbOperations.java
+  visible: true
+  text: |
+    package server;
+
+    import com.google.gson.Gson;
+
+    import java.util.HashMap;
+    import java.util.Map;
+
+    public class DbOperations {
+        private final String type;
+        private final String key;
+        private final String value;
+        static final Map<String, String> mapDb = new HashMap<>();
+
+
+        public DbOperations(String type, String key, String value) {
+            this.type = type;
+            this.key = key;
+            this.value = value;
+        }
+
+        public String set() {
+            //if (!mapDb.containsKey(key)) {
+                mapDb.put(key, value);
+                return new Gson().toJson(Map.of("response", "OK"));
+            //} else {
+                //return new Gson().toJson(new ErrorMessage());
+            //}
+        }
+
+        public String get() {
+            if (mapDb.containsKey(key)) {
+                return new Gson().toJson(new Message("OK", mapDb.get(key)));
+            } else {
+                return new Gson().toJson(new ErrorMessage());
+            }
+        }
+
+        public String delete() {
+            if (mapDb.containsKey(key)) {
+                mapDb.remove(key);
+                return new Gson().toJson(Map.of("response","OK"));
+            } else {
+                return new Gson().toJson(new ErrorMessage());
+            }
+        }
+
+        public String exit() {
+            return new Gson().toJson(Map.of("response","OK"));
+        }
+
+        public String getType() {
+            return type;
+        }
+    }
+  learner_created: true
+- name: src/client/GetArgs.java
+  visible: true
+  text: |
+    package client;
+
+    import com.beust.jcommander.Parameter;
+
+    public class GetArgs {
+        @Parameter(names={"-t"})
+        String type;
+        @Parameter(names={"-k"})
+        String key;
+        @Parameter(names={"-v"})
+        String value;
+    }
+  learner_created: true
+- name: src/server/SetCommand.java
+  visible: true
+  text: |
+    package server;
+
+    public class SetCommand implements Command {
+        private DbOperations dbOperations;
+
+        public SetCommand(DbOperations dbOperations) {
+            this.dbOperations = dbOperations;
+        }
+
+        @Override
+        public String execute() {
+            return dbOperations.set();
+        }
+    }
+  learner_created: true
+- name: src/server/ErrorMessage.java
+  visible: true
+  text: |
+    package server;
+
+    public class ErrorMessage {
+        String response;
+        String reason;
+
+        public ErrorMessage() {
+            this.response = "ERROR";
+            this.reason = "No such key";
+        }
+
+    }
+  learner_created: true
+- name: src/server/Message.java
+  visible: true
+  text: |
+    package server;
+
+    public class Message {
+        String response;
+        String value;
+
+        public Message(String response, String value) {
+            this.response = response;
+            this.value = value;
+        }
+
+    }
+  learner_created: true
+- name: src/server/Controller.java
+  visible: true
+  text: |
+    package server;
+
+    public class Controller {
+        private Command command;
+
+        public void setCommand(Command command) {
+            this.command = command;
+        }
+
+        public String executeCommand() {
+            return command.execute();
+        }
+    }
+  learner_created: true
+- name: src/server/ExitCommand.java
+  visible: true
+  text: |
+    package server;
+
+    public class ExitCommand implements Command {
+        private DbOperations dbOperations;
+
+        public ExitCommand(DbOperations dbOperations) {
+            this.dbOperations = dbOperations;
+        }
+
+        @Override
+        public String execute() {
+            return dbOperations.exit();
+        }
+    }
+  learner_created: true
+- name: src/server/Command.java
+  visible: true
+  text: |
+    package server;
+
+    public interface Command {
+        String execute();
+    }
+  learner_created: true
+- name: src/server/GetCommand.java
+  visible: true
+  text: |
+    package server;
+
+    public class GetCommand implements Command {
+        private DbOperations dbOperations;
+
+        public GetCommand(DbOperations dbOperations) {
+            this.dbOperations = dbOperations;
+        }
+
+        @Override
+        public String execute() {
+            return dbOperations.get();
+        }
+    }
+  learner_created: true
+- name: test/JsonRequestBuilder.java
+  visible: false
+  text: |-
+    import com.google.gson.Gson;
+    import com.google.gson.JsonObject;
+
+    class JsonBuilder {
+
+        private final Gson gson = new Gson();
+        private final JsonObject jsonObject = new JsonObject();
+
+        private JsonBuilder() {
+        }
+
+        public static JsonBuilder newBuilder() {
+            return new JsonBuilder();
+        }
+
+        public JsonBuilder addValue(String key, String value) {
+            jsonObject.addProperty(key, value);
+            return this;
+        }
+
+        public JsonBuilder addJsonObject(String key, JsonObject object) {
+            jsonObject.add(key, object);
+            return this;
+        }
+
+        public String getAsString() {
+            return jsonObject.toString();
+        }
+
+        public JsonObject getAsJsonObject() {
+            return jsonObject;
         }
     }
   learner_created: false
