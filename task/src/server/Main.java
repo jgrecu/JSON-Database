@@ -8,9 +8,10 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Main {
-    private static boolean doStop = false;
+    private static final AtomicBoolean doStop = new AtomicBoolean(false);
 
 
     public static void main(String[] args) {
@@ -20,7 +21,7 @@ public class Main {
 
         try (ServerSocket server = new ServerSocket(port, 50, InetAddress.getByName(address))) {
             System.out.println("Server started!");
-            while (!doStop) {
+            while (!doStop.get()) {
                 Session session = new Session(server.accept());
                 session.start();
                 session.join();
@@ -30,8 +31,9 @@ public class Main {
         }
     }
 
-    public static void setDoStop(boolean stop) {
-        doStop = stop;
+    public static void setDoStop(AtomicBoolean stop) {
+        doStop.set(stop.get());
+        //doStop = stop;
     }
 }
 
@@ -51,7 +53,7 @@ class Session extends Thread {
             String outMsg = processMessage(msg);
             output.writeUTF(outMsg);
             if (msg.contains("exit")) {
-                Main.setDoStop(true);
+                Main.setDoStop(new AtomicBoolean(true));
             }
         } catch (IOException e) {
             System.out.println("ERROR");

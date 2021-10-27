@@ -25,11 +25,16 @@ public class Main {
         String msg = "";
         if (getArgs.fileName == null) {
             Gson gson = new Gson();
-            //String msg = getArgs.getValue();
+
             msg = gson.toJson(getArgs);
         } else {
-            String file = File.separator + getArgs.fileName;
-            msg = new Scanner(new File(clientDataPath + file)).nextLine().strip();
+            String filePath = File.separator + getArgs.fileName;
+            File file = new File(clientDataPath + filePath);
+            try (Scanner scanner = new Scanner(file)) {
+                msg = scanner.nextLine().strip();
+            } catch (FileNotFoundException e) {
+                System.out.println("No file found: " + file);
+            }
         }
         String address = "127.0.0.1";
         int port = 23456;
@@ -38,7 +43,7 @@ public class Main {
         DataOutputStream output = new DataOutputStream(socket.getOutputStream())
         ) {
             System.out.println("Client started!");
-            if (msg == null) {
+            if (msg.isEmpty()) {
                 throw new IOException("no message");
             }
             output.writeUTF(msg);
