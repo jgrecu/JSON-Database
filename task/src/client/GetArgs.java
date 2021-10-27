@@ -9,4 +9,6 @@ public class GetArgs {
     String key;
     @Parameter(names={"-v"})
     String value;
+    @Parameter(names={"-in"})
+    String fileName;
 }

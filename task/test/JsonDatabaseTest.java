@@ -1,4 +1,5 @@
 import org.hyperskill.hstest.dynamic.DynamicTest;
+import org.hyperskill.hstest.dynamic.input.DynamicTesting;
 import org.hyperskill.hstest.exception.outcomes.WrongAnswer;
 import org.hyperskill.hstest.stage.StageTest;
 import org.hyperskill.hstest.testcase.CheckResult;

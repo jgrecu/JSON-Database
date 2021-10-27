@@ -3,24 +3,34 @@ package client;
 import com.beust.jcommander.JCommander;
 import com.google.gson.Gson;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class Main {
+    private static final String clientDataPath = System.getProperty("user.dir") + File.separator +
+            /*"JSON Database" + File.separator +
+            "task" + File.separator + */
+            "src" + File.separator +
+            "client" + File.separator +
+            "data";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         GetArgs getArgs = new GetArgs();
         JCommander.newBuilder()
                 .addObject(getArgs)
                 .build()
                 .parse(args);
-        Gson gson = new Gson();
-        //String msg = getArgs.getValue();
-        String msg = gson.toJson(getArgs);
-
+        String msg = "";
+        if (getArgs.fileName == null) {
+            Gson gson = new Gson();
+            //String msg = getArgs.getValue();
+            msg = gson.toJson(getArgs);
+        } else {
+            String file = File.separator + getArgs.fileName;
+            msg = new Scanner(new File(clientDataPath + file)).nextLine().strip();
+        }
         String address = "127.0.0.1";
         int port = 23456;
         try (Socket socket = new Socket(InetAddress.getByName(address), port);
