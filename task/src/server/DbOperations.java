@@ -16,8 +16,6 @@ public class DbOperations {
     private static final String NO_SUCH_KEY_REASON = "No such key";
     private static final String fileName = "db.json";
     private static final String dbFilePath = System.getProperty("user.dir") + File.separator +
-            /*"JSON Database" + File.separator +
-            "task" + File.separator + */
             "src" + File.separator +
             "server" + File.separator +
             "data" + File.separator + fileName;
@@ -71,9 +69,6 @@ public class DbOperations {
     private void exportToFile() {
         try {
             Files.write(Paths.get(dbFilePath), jsonDb.getAsJsonObject().toString().getBytes());
-//            FileWriter file = new FileWriter(dbFilePath);
-//            file.write(jsonDb.getAsJsonObject().toString());
-//            file.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

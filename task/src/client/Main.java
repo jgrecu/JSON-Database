@@ -10,8 +10,6 @@ import java.util.Scanner;
 
 public class Main {
     private static final String clientDataPath = System.getProperty("user.dir") + File.separator +
-            /*"JSON Database" + File.separator +
-            "task" + File.separator + */
             "src" + File.separator +
             "client" + File.separator +
             "data";

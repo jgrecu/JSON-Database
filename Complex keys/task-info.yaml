@@ -291,6 +291,268 @@ files:
         }
     }
   learner_created: false
+- name: src/server/MyAppException.java
+  visible: true
+  text: |
+    package server;
+
+    public class MyAppException extends Exception {
+        public MyAppException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+  learner_created: true
+- name: src/server/DeleteCommand.java
+  visible: true
+  text: |
+    package server;
+
+    public class DeleteCommand implements Command {
+        private DbOperations dbOperations;
+
+        public DeleteCommand(DbOperations dbOperations) {
+            this.dbOperations = dbOperations;
+        }
+
+        @Override
+        public String execute() {
+            return dbOperations.delete();
+        }
+    }
+  learner_created: true
+- name: src/server/DbOperations.java
+  visible: true
+  text: |
+    package server;
+
+    import java.io.File;
+    import java.io.IOException;
+    import java.nio.file.Files;
+    import java.nio.file.Paths;
+
+    public class DbOperations {
+        private final String type;
+        private final String key;
+        private final String value;
+        static final JsonBuilder jsonDb = JsonBuilder.newBuilder();
+        private static final String RESPONSE = "response";
+        private static final String OK_STATUS = "OK";
+        private static final String ERROR_STATUS = "ERROR";
+        private static final String NO_SUCH_KEY_REASON = "No such key";
+        private static final String fileName = "db.json";
+        private static final String dbFilePath = System.getProperty("user.dir") + File.separator +
+                "src" + File.separator +
+                "server" + File.separator +
+                "data" + File.separator + fileName;
+
+
+        public DbOperations(String type, String key, String value) {
+            this.type = type;
+            this.key = key;
+            this.value = value;
+        }
+
+        public synchronized String set() {
+            jsonDb.addValue(key, value);
+            //System.out.println(jsonDb.getAsString());
+            exportToFile();
+            return JsonBuilder.newBuilder().addValue(RESPONSE, OK_STATUS).getAsString();
+        }
+
+        public synchronized String get() {
+            if (jsonDb.getAsJsonObject().has(key)) {
+                String givenValue = jsonDb.getAsJsonObject().get(key).getAsString();
+                //System.out.println(jsonDb.getAsString());
+                return JsonBuilder.newBuilder().addValue(RESPONSE, OK_STATUS)
+                        .addValue("value", givenValue).getAsString();
+            } else {
+                return JsonBuilder.newBuilder().addValue(RESPONSE, ERROR_STATUS)
+                        .addValue("reason", NO_SUCH_KEY_REASON).getAsString();
+            }
+        }
+
+        public synchronized String delete() {
+            if (jsonDb.getAsJsonObject().has(key)) {
+                jsonDb.getAsJsonObject().remove(key);
+                //System.out.println(jsonDb.getAsString());
+                exportToFile();
+                return JsonBuilder.newBuilder().addValue(RESPONSE, OK_STATUS).getAsString();
+            } else {
+                return JsonBuilder.newBuilder().addValue(RESPONSE, ERROR_STATUS)
+                        .addValue("reason", NO_SUCH_KEY_REASON).getAsString();
+            }
+        }
+
+        public synchronized String exit() {
+            return JsonBuilder.newBuilder().addValue(RESPONSE, OK_STATUS).getAsString();
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        private void exportToFile() {
+            try {
+                Files.write(Paths.get(dbFilePath), jsonDb.getAsJsonObject().toString().getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+  learner_created: true
+- name: src/client/GetArgs.java
+  visible: true
+  text: |
+    package client;
+
+    import com.beust.jcommander.Parameter;
+
+    public class GetArgs {
+        @Parameter(names={"-t"})
+        String type;
+        @Parameter(names={"-k"})
+        String key;
+        @Parameter(names={"-v"})
+        String value;
+        @Parameter(names={"-in"})
+        String fileName;
+    }
+  learner_created: true
+- name: src/client/data/testGet.json
+  visible: true
+  text: '{"type":"get","key":"name"}'
+  learner_created: true
+- name: src/server/JsonBuilder.java
+  visible: true
+  text: |
+    package server;
+
+    import com.google.gson.Gson;
+    import com.google.gson.JsonObject;
+
+    public class JsonBuilder {
+        private final Gson gson = new Gson();
+        private final JsonObject jsonObject = new JsonObject();
+
+        public JsonBuilder() {
+        }
+
+        public static JsonBuilder newBuilder() {
+            return new JsonBuilder();
+        }
+
+        public JsonBuilder addValue(String key, String value) {
+            jsonObject.addProperty(key, value);
+            return this;
+        }
+
+        public JsonBuilder addJsonObject(String key, JsonObject object) {
+            jsonObject.add(key, object);
+            return this;
+        }
+
+        public String getAsString() {
+            return jsonObject.toString();
+        }
+
+        public JsonObject getAsJsonObject() {
+            return jsonObject;
+        }
+    }
+  learner_created: true
+- name: src/server/SetCommand.java
+  visible: true
+  text: |
+    package server;
+
+    public class SetCommand implements Command {
+        private DbOperations dbOperations;
+
+        public SetCommand(DbOperations dbOperations) {
+            this.dbOperations = dbOperations;
+        }
+
+        @Override
+        public String execute() {
+            return dbOperations.set();
+        }
+    }
+  learner_created: true
+- name: src/server/Controller.java
+  visible: true
+  text: |
+    package server;
+
+    public class Controller {
+        private Command command;
+
+        public void setCommand(Command command) {
+            this.command = command;
+        }
+
+        public String executeCommand() {
+            return command.execute();
+        }
+    }
+  learner_created: true
+- name: src/server/ExitCommand.java
+  visible: true
+  text: |
+    package server;
+
+    public class ExitCommand implements Command {
+        private DbOperations dbOperations;
+
+        public ExitCommand(DbOperations dbOperations) {
+            this.dbOperations = dbOperations;
+        }
+
+        @Override
+        public String execute() {
+            return dbOperations.exit();
+        }
+    }
+  learner_created: true
+- name: src/server/Command.java
+  visible: true
+  text: |
+    package server;
+
+    public interface Command {
+        String execute();
+    }
+  learner_created: true
+- name: src/server/GetCommand.java
+  visible: true
+  text: |
+    package server;
+
+    public class GetCommand implements Command {
+        private DbOperations dbOperations;
+
+        public GetCommand(DbOperations dbOperations) {
+            this.dbOperations = dbOperations;
+        }
+
+        @Override
+        public String execute() {
+            return dbOperations.get();
+        }
+    }
+  learner_created: true
+- name: src/client/data/testSet.json
+  visible: true
+  text: '{"type":"set","key":"name","value":"Kate"}'
+  learner_created: true
+- name: src/client/data/testDelete.json
+  visible: true
+  text: '{"type":"delete","key":"name"}'
+  learner_created: true
+- name: src/server/data/db.json
+  visible: true
+  text: '{"text":"Some text here"}'
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/65/stages/353/implement#comment
 status: Unchecked
 record: -1
