@@ -405,44 +405,6 @@ files:
   visible: true
   text: '{"type":"get","key":"name"}'
   learner_created: true
-- name: src/server/JsonBuilder.java
-  visible: true
-  text: |
-    package server;
-
-    import com.google.gson.Gson;
-    import com.google.gson.JsonObject;
-
-    public class JsonBuilder {
-        private final Gson gson = new Gson();
-        private final JsonObject jsonObject = new JsonObject();
-
-        public JsonBuilder() {
-        }
-
-        public static JsonBuilder newBuilder() {
-            return new JsonBuilder();
-        }
-
-        public JsonBuilder addValue(String key, String value) {
-            jsonObject.addProperty(key, value);
-            return this;
-        }
-
-        public JsonBuilder addJsonObject(String key, JsonObject object) {
-            jsonObject.add(key, object);
-            return this;
-        }
-
-        public String getAsString() {
-            return jsonObject.toString();
-        }
-
-        public JsonObject getAsJsonObject() {
-            return jsonObject;
-        }
-    }
-  learner_created: true
 - name: src/server/Controller.java
   visible: true
   text: |
@@ -549,6 +511,44 @@ files:
   learner_created: true
 - name: src/server/Session.java
   visible: true
+  learner_created: true
+- name: src/server/JsonUtility.java
+  visible: true
+  text: |
+    package server;
+
+    import com.google.gson.Gson;
+    import com.google.gson.JsonObject;
+
+    public class JsonBuilder {
+        private final Gson gson = new Gson();
+        private final JsonObject jsonObject = new JsonObject();
+
+        public JsonBuilder() {
+        }
+
+        public static JsonBuilder newBuilder() {
+            return new JsonBuilder();
+        }
+
+        public JsonBuilder addValue(String key, String value) {
+            jsonObject.addProperty(key, value);
+            return this;
+        }
+
+        public JsonBuilder addJsonObject(String key, JsonObject object) {
+            jsonObject.add(key, object);
+            return this;
+        }
+
+        public String getAsString() {
+            return jsonObject.toString();
+        }
+
+        public JsonObject getAsJsonObject() {
+            return jsonObject;
+        }
+    }
   learner_created: true
 feedback_link: https://hyperskill.org/projects/65/stages/353/implement#comment
 status: Unchecked

@@ -98,7 +98,7 @@ public enum DbOperations {
 
     private void exportToFile() {
         try {
-            Files.write(dbFilePath, JsonBuilder.prettyPrint(database).getBytes());
+            Files.write(dbFilePath, JsonUtility.prettyPrint(database).getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }

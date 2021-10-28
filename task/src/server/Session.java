@@ -75,7 +75,7 @@ public class Session extends Thread{
         } catch (Exception e) {
             response.setResponse(Response.STATUS_ERROR);
         } finally {
-            return JsonBuilder.prettyPrint(response);
+            return JsonUtility.prettyPrint(response);
         }
     }
 
