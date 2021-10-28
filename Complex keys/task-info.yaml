@@ -291,17 +291,6 @@ files:
         }
     }
   learner_created: false
-- name: src/server/MyAppException.java
-  visible: true
-  text: |
-    package server;
-
-    public class MyAppException extends Exception {
-        public MyAppException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-  learner_created: true
 - name: src/server/DbOperations.java
   visible: true
   text: |
@@ -558,5 +547,5 @@ status: Solved
 feedback:
   message: Well done! You've finished the project. Select a new project on <a href="https://hyperskill.org/projects">JetBrains
     Academy</a> to continue learning.
-  time: Thu, 28 Oct 2021 15:58:53 UTC
+  time: Thu, 28 Oct 2021 16:06:54 UTC
 record: -1
