@@ -41,7 +41,6 @@ public enum DbOperations {
     public synchronized void set(JsonElement key, JsonElement value) {
         if (key.isJsonPrimitive()) {
             database.add(key.getAsString(), value);
-            //System.out.println(database.getAsString());
         } else if (key.isJsonArray()) {
             JsonArray keys = key.getAsJsonArray();
             String toAdd = keys.remove(keys.size() - 1).getAsString();
@@ -54,7 +53,6 @@ public enum DbOperations {
 
     public synchronized JsonElement get(JsonElement key) {
         if (key.isJsonPrimitive() && database.getAsJsonObject().has(key.getAsString())) {
-            //System.out.println(jsonDb.getAsString());
             return database.getAsJsonObject().get(key.getAsString());
         } else if (key.isJsonArray()){
             return findElement(key.getAsJsonArray(), false);
@@ -65,7 +63,6 @@ public enum DbOperations {
     public synchronized void delete(JsonElement key) {
         if (key.isJsonPrimitive() && database.has(key.getAsString())) {
             database.remove(key.getAsString());
-            //System.out.println(jsonDb.getAsString());
         } else if (key.isJsonArray()) {
             JsonArray keys = key.getAsJsonArray();
             String toRemove = keys.remove(keys.size() - 1).getAsString();

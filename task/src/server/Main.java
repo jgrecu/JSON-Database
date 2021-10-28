@@ -29,7 +29,6 @@ public class Main {
 
     public static void setDoStop(AtomicBoolean stop) {
         doStop.set(stop.get());
-        //doStop = stop;
     }
 }
 

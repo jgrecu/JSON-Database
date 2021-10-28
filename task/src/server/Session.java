@@ -31,9 +31,6 @@ public class Session extends Thread{
             String msg = input.readUTF();
             String outMsg = processMessage(msg);
             output.writeUTF(outMsg);
-            if (msg.contains("exit")) {
-                Main.setDoStop(new AtomicBoolean(true));
-            }
         } catch (IOException e) {
             System.out.println("ERROR");
         }
@@ -64,6 +61,7 @@ public class Session extends Thread{
                     controller.executeCommand();
                     break;
                 case "exit":
+                    Main.setDoStop(new AtomicBoolean(true));
                     break;
                 default:
                     throw new BadRequestException();
@@ -75,7 +73,7 @@ public class Session extends Thread{
         } catch (Exception e) {
             response.setResponse(Response.STATUS_ERROR);
         } finally {
-            return JsonUtility.prettyPrint(response);
+            return JsonUtility.print(response);
         }
     }
 

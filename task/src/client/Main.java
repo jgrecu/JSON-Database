@@ -1,18 +1,20 @@
 package client;
 
 import com.beust.jcommander.JCommander;
-import com.google.gson.Gson;
+import server.JsonUtility;
 
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Scanner;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Main {
-    private static final String clientDataPath = System.getProperty("user.dir") + File.separator +
+    private static final Path clientDataPath = Paths.get(System.getProperty("user.dir") + File.separator +
             "src" + File.separator +
             "client" + File.separator +
-            "data";
+            "data");
 
     public static void main(String[] args) throws FileNotFoundException {
         GetArgs getArgs = new GetArgs();
@@ -20,25 +22,21 @@ public class Main {
                 .addObject(getArgs)
                 .build()
                 .parse(args);
-        String msg = "";
-        if (getArgs.fileName == null) {
-            Gson gson = new Gson();
 
-            msg = gson.toJson(getArgs);
-        } else {
-            String filePath = File.separator + getArgs.fileName;
-            File file = new File(clientDataPath + filePath);
-            try (Scanner scanner = new Scanner(file)) {
-                msg = scanner.nextLine().strip();
-            } catch (FileNotFoundException e) {
-                System.out.println("No file found: " + file);
-            }
+        Path filePath = Path.of(clientDataPath + File.separator + getArgs.fileName);
+        String msg = "";
+        try {
+            msg = getArgs.fileName != null ?
+                    new String(Files.readAllBytes(filePath)) : JsonUtility.print(getArgs);
+        } catch (IOException e) {
+            System.out.println("No file found: " + filePath);
         }
+
         String address = "127.0.0.1";
         int port = 23456;
         try (Socket socket = new Socket(InetAddress.getByName(address), port);
-        DataInputStream input = new DataInputStream(socket.getInputStream());
-        DataOutputStream output = new DataOutputStream(socket.getOutputStream())
+             DataInputStream input = new DataInputStream(socket.getInputStream());
+             DataOutputStream output = new DataOutputStream(socket.getOutputStream())
         ) {
             System.out.println("Client started!");
             if (msg.isEmpty()) {
@@ -48,7 +46,7 @@ public class Main {
             System.out.println("Sent: " + msg);
             String receivedMsg = input.readUTF();
             System.out.println("Received: " + receivedMsg);
-        } catch (IOException e ) {
+        } catch (IOException e) {
             System.out.println("ERROR");
         }
 

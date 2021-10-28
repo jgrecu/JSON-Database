@@ -10,4 +10,11 @@ public class JsonUtility {
                 .create()
                 .toJson(jsonObject);
     }
+
+    public static String print(Object jsonObject) {
+        return new GsonBuilder()
+                .create()
+                .toJson(jsonObject);
+    }
+
 }
