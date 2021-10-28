@@ -13,6 +13,8 @@ import java.nio.file.Paths;
 public class Main {
     private static final Path clientDataPath = Paths.get(System.getProperty("user.dir") + File.separator +
             "src" + File.separator +
+            "main" + File.separator +
+            "java" + File.separator +
             "client" + File.separator +
             "data");
 

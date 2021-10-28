@@ -20,6 +20,8 @@ public enum DbOperations {
     private static final String fileName = "db.json";
     private static final Path dbFilePath = Paths.get(System.getProperty("user.dir") + File.separator +
             "src" + File.separator +
+            "main" + File.separator +
+            "java" + File.separator +
             "server" + File.separator +
             "data" + File.separator + fileName);
 
