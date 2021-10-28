@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 public class JsonBuilder {
@@ -30,5 +31,12 @@ public class JsonBuilder {
 
     public JsonObject getAsJsonObject() {
         return jsonObject;
+    }
+
+    public static String prettyPrint(Object jsonObject) {
+        return new GsonBuilder()
+                .setPrettyPrinting()
+                .create()
+                .toJson(jsonObject);
     }
 }

@@ -1,5 +1,7 @@
 package server;
 
+import server.commands.Command;
+
 public class Controller {
     private Command command;
 
@@ -7,7 +9,7 @@ public class Controller {
         this.command = command;
     }
 
-    public String executeCommand() {
-        return command.execute();
+    public void executeCommand() {
+        command.execute();
     }
 }

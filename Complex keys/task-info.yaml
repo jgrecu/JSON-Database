@@ -302,24 +302,6 @@ files:
         }
     }
   learner_created: true
-- name: src/server/DeleteCommand.java
-  visible: true
-  text: |
-    package server;
-
-    public class DeleteCommand implements Command {
-        private DbOperations dbOperations;
-
-        public DeleteCommand(DbOperations dbOperations) {
-            this.dbOperations = dbOperations;
-        }
-
-        @Override
-        public String execute() {
-            return dbOperations.delete();
-        }
-    }
-  learner_created: true
 - name: src/server/DbOperations.java
   visible: true
   text: |
@@ -461,24 +443,6 @@ files:
         }
     }
   learner_created: true
-- name: src/server/SetCommand.java
-  visible: true
-  text: |
-    package server;
-
-    public class SetCommand implements Command {
-        private DbOperations dbOperations;
-
-        public SetCommand(DbOperations dbOperations) {
-            this.dbOperations = dbOperations;
-        }
-
-        @Override
-        public String execute() {
-            return dbOperations.set();
-        }
-    }
-  learner_created: true
 - name: src/server/Controller.java
   visible: true
   text: |
@@ -496,25 +460,31 @@ files:
         }
     }
   learner_created: true
-- name: src/server/ExitCommand.java
+- name: src/client/data/testSet.json
   visible: true
-  text: |
-    package server;
-
-    public class ExitCommand implements Command {
-        private DbOperations dbOperations;
-
-        public ExitCommand(DbOperations dbOperations) {
-            this.dbOperations = dbOperations;
-        }
-
-        @Override
-        public String execute() {
-            return dbOperations.exit();
-        }
-    }
+  text: '{"type":"set","key":"name","value":"Kate"}'
   learner_created: true
-- name: src/server/Command.java
+- name: src/client/data/testDelete.json
+  visible: true
+  text: '{"type":"delete","key":"name"}'
+  learner_created: true
+- name: src/server/data/db.json
+  visible: true
+  text: '{"text":"Some text here"}'
+  learner_created: true
+- name: src/server/requests/Request.java
+  visible: true
+  learner_created: true
+- name: src/server/requests/Response.java
+  visible: true
+  learner_created: true
+- name: src/server/exceptions/BadRequestException.java
+  visible: true
+  learner_created: true
+- name: src/server/exceptions/NoSuchKeyException.java
+  visible: true
+  learner_created: true
+- name: src/server/commands/Command.java
   visible: true
   text: |
     package server;
@@ -523,7 +493,25 @@ files:
         String execute();
     }
   learner_created: true
-- name: src/server/GetCommand.java
+- name: src/server/commands/DeleteCommand.java
+  visible: true
+  text: |
+    package server;
+
+    public class DeleteCommand implements Command {
+        private DbOperations dbOperations;
+
+        public DeleteCommand(DbOperations dbOperations) {
+            this.dbOperations = dbOperations;
+        }
+
+        @Override
+        public String execute() {
+            return dbOperations.delete();
+        }
+    }
+  learner_created: true
+- name: src/server/commands/GetCommand.java
   visible: true
   text: |
     package server;
@@ -541,17 +529,26 @@ files:
         }
     }
   learner_created: true
-- name: src/client/data/testSet.json
+- name: src/server/commands/SetCommand.java
   visible: true
-  text: '{"type":"set","key":"name","value":"Kate"}'
+  text: |
+    package server;
+
+    public class SetCommand implements Command {
+        private DbOperations dbOperations;
+
+        public SetCommand(DbOperations dbOperations) {
+            this.dbOperations = dbOperations;
+        }
+
+        @Override
+        public String execute() {
+            return dbOperations.set();
+        }
+    }
   learner_created: true
-- name: src/client/data/testDelete.json
+- name: src/server/Session.java
   visible: true
-  text: '{"type":"delete","key":"name"}'
-  learner_created: true
-- name: src/server/data/db.json
-  visible: true
-  text: '{"text":"Some text here"}'
   learner_created: true
 feedback_link: https://hyperskill.org/projects/65/stages/353/implement#comment
 status: Unchecked

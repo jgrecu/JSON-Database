@@ -1,74 +1,104 @@
 package server;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import server.exceptions.NoSuchKeyException;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class DbOperations {
-    private final String type;
-    private final String key;
-    private final String value;
-    static final JsonBuilder jsonDb = JsonBuilder.newBuilder();
-    private static final String RESPONSE = "response";
-    private static final String OK_STATUS = "OK";
-    private static final String ERROR_STATUS = "ERROR";
-    private static final String NO_SUCH_KEY_REASON = "No such key";
+public enum DbOperations {
+
+    INSTANCE;
+
+    private JsonObject database;
     private static final String fileName = "db.json";
-    private static final String dbFilePath = System.getProperty("user.dir") + File.separator +
+    private static final Path dbFilePath = Paths.get(System.getProperty("user.dir") + File.separator +
             "src" + File.separator +
             "server" + File.separator +
-            "data" + File.separator + fileName;
+            "data" + File.separator + fileName);
 
 
-    public DbOperations(String type, String key, String value) {
-        this.type = type;
-        this.key = key;
-        this.value = value;
+    DbOperations() {
     }
 
-    public synchronized String set() {
-        jsonDb.addValue(key, value);
-        //System.out.println(jsonDb.getAsString());
-        exportToFile();
-        return JsonBuilder.newBuilder().addValue(RESPONSE, OK_STATUS).getAsString();
-    }
-
-    public synchronized String get() {
-        if (jsonDb.getAsJsonObject().has(key)) {
-            String givenValue = jsonDb.getAsJsonObject().get(key).getAsString();
-            //System.out.println(jsonDb.getAsString());
-            return JsonBuilder.newBuilder().addValue(RESPONSE, OK_STATUS)
-                    .addValue("value", givenValue).getAsString();
+    public void init() throws IOException {
+        if (Files.exists(dbFilePath)) {
+            String content = new String(Files.readAllBytes(dbFilePath));
+            database = new Gson().fromJson(content, JsonObject.class);
         } else {
-            return JsonBuilder.newBuilder().addValue(RESPONSE, ERROR_STATUS)
-                    .addValue("reason", NO_SUCH_KEY_REASON).getAsString();
-        }
-    }
-
-    public synchronized String delete() {
-        if (jsonDb.getAsJsonObject().has(key)) {
-            jsonDb.getAsJsonObject().remove(key);
-            //System.out.println(jsonDb.getAsString());
+            Files.createFile(dbFilePath);
+            database = new JsonObject();
             exportToFile();
-            return JsonBuilder.newBuilder().addValue(RESPONSE, OK_STATUS).getAsString();
-        } else {
-            return JsonBuilder.newBuilder().addValue(RESPONSE, ERROR_STATUS)
-                    .addValue("reason", NO_SUCH_KEY_REASON).getAsString();
         }
     }
 
-    public synchronized String exit() {
-        return JsonBuilder.newBuilder().addValue(RESPONSE, OK_STATUS).getAsString();
+    public synchronized void set(JsonElement key, JsonElement value) {
+        if (key.isJsonPrimitive()) {
+            database.add(key.getAsString(), value);
+            //System.out.println(database.getAsString());
+        } else if (key.isJsonArray()) {
+            JsonArray keys = key.getAsJsonArray();
+            String toAdd = keys.remove(keys.size() - 1).getAsString();
+            findElement(keys, true).getAsJsonObject().add(toAdd, value);
+        } else {
+            throw new NoSuchKeyException();
+        }
+        exportToFile();
     }
 
-    public String getType() {
-        return type;
+    public synchronized JsonElement get(JsonElement key) {
+        if (key.isJsonPrimitive() && database.getAsJsonObject().has(key.getAsString())) {
+            //System.out.println(jsonDb.getAsString());
+            return database.getAsJsonObject().get(key.getAsString());
+        } else if (key.isJsonArray()){
+            return findElement(key.getAsJsonArray(), false);
+        }
+        throw new NoSuchKeyException();
+    }
+
+    public synchronized void delete(JsonElement key) {
+        if (key.isJsonPrimitive() && database.has(key.getAsString())) {
+            database.remove(key.getAsString());
+            //System.out.println(jsonDb.getAsString());
+        } else if (key.isJsonArray()) {
+            JsonArray keys = key.getAsJsonArray();
+            String toRemove = keys.remove(keys.size() - 1).getAsString();
+            findElement(keys, false).getAsJsonObject().remove(toRemove);
+            exportToFile();
+        } else {
+            throw new NoSuchKeyException();
+        }
+    }
+
+    private JsonElement findElement(JsonArray keys, boolean createIfAbsent) {
+        JsonElement tmp = database;
+        if (createIfAbsent) {
+            for (JsonElement key: keys) {
+                if (!tmp.getAsJsonObject().has(key.getAsString())) {
+                    tmp.getAsJsonObject().add(key.getAsString(), new JsonObject());
+                }
+                tmp = tmp.getAsJsonObject().get(key.getAsString());
+            }
+        } else {
+            for (JsonElement key: keys) {
+                if (!key.isJsonPrimitive() || !tmp.getAsJsonObject().has(key.getAsString())) {
+                    throw new NoSuchKeyException();
+                }
+                tmp = tmp.getAsJsonObject().get(key.getAsString());
+            }
+        }
+        return tmp;
     }
 
     private void exportToFile() {
         try {
-            Files.write(Paths.get(dbFilePath), jsonDb.getAsJsonObject().toString().getBytes());
+            Files.write(dbFilePath, JsonBuilder.prettyPrint(database).getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
