@@ -41,6 +41,7 @@ public class Session extends Thread{
         final Controller controller = new Controller();
         Request request = gson.fromJson(receivedMessage, Request.class);
         Response response = new Response();
+        String finalResponse = "";
 
         try {
             switch (request.getType()) {
@@ -73,8 +74,9 @@ public class Session extends Thread{
         } catch (Exception e) {
             response.setResponse(Response.STATUS_ERROR);
         } finally {
-            return JsonUtility.print(response);
+            finalResponse = JsonUtility.print(response);
         }
+        return finalResponse;
     }
 
 }
