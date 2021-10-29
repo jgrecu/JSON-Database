@@ -29,7 +29,7 @@ public class Main {
         String msg = "";
         try {
             msg = getArgs.fileName != null ?
-                    new String(Files.readAllBytes(filePath)) : JsonUtility.print(getArgs);
+                    new String(Files.readAllBytes(filePath)) : JsonUtility.prettyPrint(getArgs);
         } catch (IOException e) {
             System.out.println("No file found: " + filePath);
         }
