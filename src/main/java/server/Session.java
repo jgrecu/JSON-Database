@@ -74,7 +74,7 @@ public class Session implements Runnable {
         } catch (Exception e) {
             response.setResponse(Response.STATUS_ERROR);
         } finally {
-            finalResponse = JsonUtility.print(response);
+            finalResponse = JsonUtility.prettyPrint(response);
         }
         return finalResponse;
     }
