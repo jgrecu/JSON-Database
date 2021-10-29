@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class Session extends Thread{
+public class Session implements Runnable {
     private final Socket socket;
     private final Controller controller = new Controller();
 
