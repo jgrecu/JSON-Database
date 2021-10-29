@@ -19,8 +19,9 @@ public class Main {
             DbOperations.INSTANCE.init();
             while (!doStop.get()) {
                 Session session = new Session(server.accept());
-                session.start();
-                session.join();
+                Thread thread = new Thread(session);
+                thread.start();
+                thread.join();
             }
         } catch (IOException | InterruptedException e) {
             System.out.println("ERROR");
